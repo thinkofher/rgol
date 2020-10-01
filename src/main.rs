@@ -1,6 +1,8 @@
 pub mod life;
 
 use std::env;
+use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::Arc;
 use std::thread;
 use std::time;
 
@@ -23,8 +25,16 @@ fn main() {
     let mut g = life::new_game(width, height);
     life::randomize(&mut g);
 
+    let running = Arc::new(AtomicBool::new(true));
+    let r = running.clone();
+
+    ctrlc::set_handler(move || {
+        r.store(false, Ordering::SeqCst);
+    })
+    .expect("Error setting Ctrl-C handler.");
+
     let mut s: String;
-    loop {
+    while running.load(Ordering::SeqCst) {
         life::advance(&mut g);
         clear();
         s = life::show(&g, width, height);
