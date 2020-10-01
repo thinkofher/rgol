@@ -59,17 +59,17 @@ pub type Game = HashMap<Point, Life>;
 
 pub fn new_game(width: u16, height: u16) -> Game {
     let mut res = HashMap::new();
-    for x in 0..width {
-        for y in 0..height {
-            res.insert(
-                Point {
-                    x: x as i32,
-                    y: y as i32,
-                },
-                Life::Dead,
-            );
-        }
-    }
+    (0..width).for_each(|x| {
+        (0..height).for_each(|y| {
+             res.insert(
+                 Point {
+                     x: x as i32,
+                     y: y as i32,
+                 },
+                 Life::Dead,
+             );
+        });
+    });
     res
 }
 
@@ -102,8 +102,8 @@ pub fn advance(game: &mut Game) -> Game {
 
 pub fn show(game: &Game, width: u16, height: u16) -> String {
     let mut res = String::new();
-    for y in (0..height).rev() {
-        for x in 0..width {
+    (0..height).rev().for_each(|y| {
+        (0..width).for_each(|x| {
             let c = {
                 match game.get(&Point { x: x as i32, y: y as i32 }) {
                     Some(Life::Alive) => '*',
@@ -112,8 +112,8 @@ pub fn show(game: &Game, width: u16, height: u16) -> String {
                 }
             };
             res.push(c);
-        }
+        });
         res.push('\n');
-    }
+    });
     res
 }
